@@ -33,6 +33,26 @@ def run_command(command):
     result = os.system(command)
     return "✅ Executed" if result == 0 else f"❌ Failed with code {result}"
 
+def read_file(path):
+    """
+    path is a string pointing to the file location
+    """
+    try:
+        with open(path, 'r') as f:
+            return f.read()
+    except Exception as e:
+        return f"🚨 Error: {str(e)}"
+
+def list_dir(_=None):
+    """
+    Optionally accept an argument, but ignore it, so we don't break if GPT passes something.
+    """
+    try:
+        return "\n".join(os.listdir())
+    except Exception as e:
+        return f"🚨 Error: {str(e)}"
+
+
 available_tools = {
     "get_weather": {
         "fn": get_weather,
@@ -45,7 +65,20 @@ available_tools = {
     "run_command":{
         "fn":run_command,
         "description":"Takes a command as input to execute on system and returns output "
-    }
+    },
+    "read_file": {
+        "fn": read_file,
+        "description": (
+            "Reads the entire content of a file and returns it. "
+            "Example Input: \"my_folder/new_code.py\""
+        )
+    },
+    "list_dir": {
+        "fn": list_dir,
+        "description": (
+            "Lists all files and folders in the current directory. No input needed or pass an empty string."
+        )
+    }   
 }
 
 
@@ -68,6 +101,14 @@ Available Tools:
     - get_weather: Takes a city name as an input and returns the current weather for the city
     - calculate_area: Takes length and width as input. Example Input: { "length": 5, "width": 3 }
     - run_command : Takes a command as input to execute on system and returns output 
+    read_file:
+    - Input: "path/to/file"
+    - Example: "files/hello.txt"
+
+    list_dir:
+    - No input needed (or empty string)
+    - Example: ""
+    -"Lists all files and folders in the current directory. No input needed or pass an empty string."
 
 example:
 User Query: What is the weather of new york?
@@ -125,8 +166,11 @@ while True:
 
                 if isinstance(tool_input, dict):
                     output = tool_fn(**tool_input)
+                elif not tool_input:  # tool_input is None, "", or empty -> no args
+                    output = tool_fn()
                 else:
                     output = tool_fn(tool_input)
+
 
                 messages.append({
                     "role": "assistant",
