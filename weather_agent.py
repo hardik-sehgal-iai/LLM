@@ -27,7 +27,10 @@ def calculate_area(length: float, width: float):
 
 def run_command(command):
     print("tool called: run command", command)
-    result = os.system(command=command)
+    if "git commit -m" in command and "'" in command:
+        return "❌ Please use double quotes in commit message to avoid PowerShell errors."
+
+    result = os.system(command)
     return "✅ Executed" if result == 0 else f"❌ Failed with code {result}"
 
 available_tools = {

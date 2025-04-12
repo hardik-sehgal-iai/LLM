@@ -19,6 +19,7 @@ result_openai = llm_openai.invoke(messages)
 
 # Initialize and invoke the Google Gemini model
 llm_google = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+
 result_google = llm_google.invoke(messages)
 
 # Print results from both models
